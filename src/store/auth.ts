@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import axios from 'axios';
 
 interface User {
   id: string;
@@ -27,20 +26,42 @@ export const useAuthStore = create<AuthState>((set) => ({
   signIn: async (email: string, password: string) => {
     set({ loading: true });
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', { email, password }, { withCredentials: true });
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
+      }
+      
+      const userData = await response.json();
       set({ user: response.data, loading: false });
     } catch (err) {
       set({ user: null, loading: false });
     }
   },
   signOut: async () => {
-    await axios.post('http://localhost:3001/api/auth/logout', {}, { withCredentials: true });
+    await fetch('http://localhost:3001/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
     set({ user: null });
   },
   checkAuth: async () => {
     set({ loading: true });
     try {
-      const response = await axios.get('http://localhost:3001/api/auth/me', { withCredentials: true });
+      const response = await fetch('http://localhost:3001/api/auth/me', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Not authenticated');
+      }
+      
+      const userData = await response.json();
       set({ user: response.data, loading: false });
     } catch (err) {
       set({ user: null, loading: false });
@@ -59,10 +80,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   updatePassword: async (currentPassword: string, newPassword: string) => {
     try {
-      await axios.post('http://localhost:3001/api/auth/update-password', {
-        currentPassword,
-        newPassword
-      }, { withCredentials: true });
+      const response = await fetch('http://localhost:3001/api/auth/update-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update password');
+      }
     } catch (error) {
       console.error('Error updating password:', error);
       throw error;

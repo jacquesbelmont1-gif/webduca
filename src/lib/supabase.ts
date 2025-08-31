@@ -1,2 +1,2 @@
-// Arquivo removido. Toda lógica do Supabase deve ser migrada para o backend usando Sequelize ou outro ORM.
-// ...arquivo vazio...
+// This file has been removed - PostgreSQL backend is now used instead
+export const mockSupabaseResponse = (data?: any) => ({ data, error: null });

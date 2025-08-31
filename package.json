@@ -8,29 +8,32 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "setup-db": "node scripts/setup-db.js"
+    "server": "cd server && npm start",
+    "dev:full": "npm run server & npm run dev"
   },
   "dependencies": {
     "axios": "^1.6.7",
+    "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "lucide-react": "^0.344.0",
     "multer": "^1.4.5-lts.1",
-    "pg": "^8.14.1",
-    "pg-hstore": "^2.3.4",
-    "react": "^18.3.1",
     "react-bootstrap": "^2.10.9",
-    "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.3",
     "sequelize": "^6.37.6",
-    "sequelize-cli": "^6.6.2",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.18",
     "eslint": "^9.9.1",
@@ -44,4 +47,3 @@
     "vite": "^5.4.14"
   }
 }
-

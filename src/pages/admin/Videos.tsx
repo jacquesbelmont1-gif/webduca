@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, Trash2, Edit, Search, Video as VideoIcon, Upload, ArrowLeft, Check, X, Loader } from 'lucide-react';
+import { Plus, Search, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTrainingStore } from '../../store/training';
 import type { VideoData } from '../../store/training';
-import { getVideoThumbnail } from '../../utils/videoThumbnail';
 import { useQuestionsStore } from '../../store/questions';
-import { Button, Container, Spinner, Alert, Row, Col, Card, Form, InputGroup } from 'react-bootstrap';
 import { VideoCard } from '../../components';
 
 export default function Videos() {
@@ -20,18 +18,6 @@ export default function Videos() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [editingVideo, setEditingVideo] = useState<VideoData | null>(null);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [customThumbnail, setCustomThumbnail] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [newVideo, setNewVideo] = useState<Partial<VideoData>>({
-    title: '',
-    description: '',
-    url: '',
-    platform: 'loom',
-    category: categories[0],
-    questionId: '',
-  });
 
   // Carrega os dados iniciais
   useEffect(() => {
@@ -61,207 +47,84 @@ export default function Videos() {
   // Extrai todas as categorias únicas dos vídeos
   const uniqueCategories = [...new Set(videos.map(video => video.category))];
 
-  // Lidar com upload de thumbnail personalizada
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCustomThumbnail(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Adicionar um novo vídeo
-  const handleAddVideo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      let thumbnailUrl = customThumbnail;
-      
-      // Se não tiver thumbnail personalizada, tenta obter da plataforma
-      if (!thumbnailUrl && newVideo.url && newVideo.platform) {
-        thumbnailUrl = await getVideoThumbnail(newVideo.url, newVideo.platform as 'youtube' | 'vimeo' | 'loom');
-      }
-
-      // Preparar dados do vídeo
-      const videoData = {
-        title: newVideo.title || '',
-        description: newVideo.description || '',
-        url: newVideo.url || '',
-        platform: newVideo.platform as 'youtube' | 'vimeo' | 'loom',
-        thumbnail_url: thumbnailUrl || '',
-        category: newVideo.category || categories[0],
-        questionId: newVideo.questionId
-      };
-
-      // Adicionar vídeo
-      await addVideo(videoData);
-      
-      // Resetar o formulário
-      setNewVideo({
-        title: '',
-        description: '',
-        url: '',
-        platform: 'loom',
-        category: categories[0],
-        questionId: '',
-      });
-      setCustomThumbnail(null);
-      setShowAddForm(false);
-      
-      // Mostrar mensagem de sucesso
-      setError('Vídeo adicionado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao adicionar vídeo:', error);
-      setError('Erro ao adicionar vídeo. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Atualizar um vídeo existente
-  const handleUpdateVideo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingVideo) return;
-    
-    setLoading(true);
-    
-    try {
-      let thumbnailUrl = customThumbnail || editingVideo.thumbnail_url;
-      
-      // Se a URL mudou e não tem thumbnail personalizada, tenta obter da plataforma
-      if (customThumbnail === null && 
-          editingVideo.url !== newVideo.url && 
-          newVideo.url && 
-          newVideo.platform) {
-        thumbnailUrl = await getVideoThumbnail(newVideo.url, newVideo.platform as 'youtube' | 'vimeo' | 'loom');
-      }
-
-      // Preparar dados atualizados
-      const updatedData: Partial<VideoData> = {
-        ...(newVideo.title !== undefined && { title: newVideo.title }),
-        ...(newVideo.description !== undefined && { description: newVideo.description }),
-        ...(newVideo.url !== undefined && { url: newVideo.url }),
-        ...(newVideo.platform !== undefined && { platform: newVideo.platform as 'youtube' | 'vimeo' | 'loom' }),
-        ...(thumbnailUrl && { thumbnail_url: thumbnailUrl }),
-        ...(newVideo.category !== undefined && { category: newVideo.category }),
-        ...(newVideo.questionId !== undefined && { questionId: newVideo.questionId })
-      };
-
-      // Atualizar vídeo
-      await updateVideo(editingVideo.id, updatedData);
-      
-      // Resetar estado
-      setEditingVideo(null);
-      setCustomThumbnail(null);
-      
-      // Mostrar mensagem de sucesso
-      setError('Vídeo atualizado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao atualizar vídeo:', error);
-      setError('Erro ao atualizar vídeo. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Excluir um vídeo
-  const handleDeleteVideo = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este vídeo?')) return;
-    
-    setLoading(true);
-    
-    try {
-      await deleteVideo(id);
-      setError('Vídeo excluído com sucesso!');
-    } catch (error) {
-      console.error('Erro ao excluir vídeo:', error);
-      setError('Erro ao excluir vídeo. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <Container className="py-4">
-      <h1 className="mb-4">Vídeos de Treinamento</h1>
-      
-      {/* Barra de ações */}
-      <div className="d-flex justify-content-between mb-4">
-        <Button 
-          variant="primary" 
-          onClick={() => navigate('/admin/videos/new')}
+    <div className="p-8">
+      <div className="flex items-center gap-4 mb-8">
+        <Link 
+          to="/admin"
+          className="bg-[#051524] text-white p-2 rounded-lg hover:bg-[#051524]/80 transition-colors"
         >
-          Adicionar Vídeo
-        </Button>
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-2xl font-bold text-white">Vídeos de Treinamento</h1>
       </div>
       
-      {/* Filtros */}
-      <Row className="mb-4">
-        <Col md={6}>
-          <InputGroup>
-            <Form.Control
+      <div className="flex justify-between items-center mb-6">
+        <button 
+          onClick={() => navigate('/admin/videos/new')}
+          className="bg-[#1079e2] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#1079e2]/90"
+        >
+          <Plus className="w-5 h-5" />
+          Adicionar Vídeo
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#b5cbe2]" />
+          <input
               placeholder="Pesquisar por título..."
               value={filter}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
+              onChange={(e) => setFilter(e.target.value)}
+              className="w-full bg-[#112840] text-white pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
             />
-          </InputGroup>
-        </Col>
-        <Col md={6}>
-          <Form.Select 
+        </div>
+        <select 
             value={categoryFilter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategoryFilter(e.target.value)}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="bg-[#112840] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
           >
             <option value="">Todas as categorias</option>
             {uniqueCategories.map(category => (
               <option key={category} value={category}>{category}</option>
             ))}
-          </Form.Select>
-        </Col>
-      </Row>
+          </select>
+      </div>
       
-      {/* Mensagem de carregamento */}
       {loading && (
-        <div className="text-center my-5">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Carregando...</span>
-          </Spinner>
-          <p className="mt-2">Carregando vídeos...</p>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1079e2] mx-auto mb-4"></div>
+          <p className="text-[#b5cbe2]">Carregando vídeos...</p>
         </div>
       )}
       
-      {/* Mensagem de erro */}
       {error && (
-        <Alert variant="danger">
+        <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-lg mb-6">
           {error}
-        </Alert>
+        </div>
       )}
       
-      {/* Lista de vídeos */}
       {!loading && !error && (
         <>
           {filteredVideos.length === 0 ? (
-            <Alert variant="info">
+            <div className="bg-blue-500/20 border border-blue-500 text-blue-400 p-4 rounded-lg">
               Nenhum vídeo encontrado com os filtros atuais.
-            </Alert>
+            </div>
           ) : (
-            <Row>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredVideos.map(video => (
-                <Col key={video.id} md={6} lg={4} className="mb-4">
+                <div key={video.id}>
                   <VideoCard 
                     video={video}
                     relatedQuestion={video.questionId ? questions.find(q => q.id === video.questionId) : undefined}
                     onEdit={() => navigate(`/admin/videos/edit/${video.id}`)}
                   />
-                </Col>
+                </div>
               ))}
-            </Row>
+            </div>
           )}
         </>
       )}
-    </Container>
+    </div>
   );
 }

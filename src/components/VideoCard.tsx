@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Edit } from 'lucide-react';
 import { VideoData } from '../store/training';
 import { Question } from '../store/questions';
 
@@ -11,61 +11,58 @@ interface VideoCardProps {
 
 export function VideoCard({ video, relatedQuestion, onEdit }: VideoCardProps) {
   return (
-    <Card className="h-100 shadow-sm">
-      <div className="position-relative">
+    <div className="bg-[#112840] rounded-lg overflow-hidden h-full flex flex-col">
+      <div className="relative">
         {video.thumbnail_url ? (
-          <Card.Img 
-            variant="top" 
+          <img 
             src={video.thumbnail_url} 
             alt={video.title}
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              e.currentTarget.src = 'https://via.placeholder.com/640x360?text=Thumbnail+Indisponível';
-            }}
+            className="w-full aspect-video object-cover"
           />
         ) : (
-          <div className="bg-light d-flex justify-content-center align-items-center" style={{ height: '180px' }}>
-            <i className="bi bi-camera-video fs-1 text-secondary"></i>
+          <div className="w-full aspect-video bg-[#051524] flex items-center justify-center">
+            <span className="text-[#b5cbe2]">Sem thumbnail</span>
           </div>
         )}
-        <span className="position-absolute top-0 end-0 bg-primary text-white px-2 py-1 m-2 rounded-pill small">
+        <span className="absolute top-2 right-2 bg-[#1079e2] text-white px-2 py-1 rounded-full text-xs">
           {video.platform}
         </span>
       </div>
       
-      <Card.Body className="d-flex flex-column">
-        <Card.Title>{video.title}</Card.Title>
-        <Card.Text className="text-muted small mb-3" style={{ minHeight: '3rem', maxHeight: '3rem', overflow: 'hidden' }}>
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="text-white font-medium mb-2">{video.title}</h3>
+        <p className="text-[#b5cbe2] text-sm mb-4 flex-1 line-clamp-3">
           {video.description}
-        </Card.Text>
+        </p>
         
         <div className="mt-auto">
-          <div className="d-flex align-items-center justify-content-between mb-2">
-            <span className="badge bg-light text-dark">
+          <div className="flex items-center justify-between mb-4">
+            <span className="px-2 py-1 bg-[#1079e2]/20 text-[#1079e2] rounded text-xs">
               {video.category}
             </span>
-            <small className="text-muted">
-              {new Date(video.createdAt).toLocaleDateString()}
-            </small>
+            <span className="text-[#b5cbe2] text-xs">
+              {new Date(video.createdAt || video.created_at).toLocaleDateString()}
+            </span>
           </div>
           
           {relatedQuestion && (
-            <div className="mb-3 p-2 border rounded bg-light">
-              <small className="d-block text-muted mb-1">Pergunta relacionada:</small>
-              <span className="small fw-semibold">{relatedQuestion.title}</span>
+            <div className="mb-4 p-3 border border-[#051524] rounded bg-[#051524]">
+              <p className="text-[#b5cbe2] text-xs mb-1">Pergunta relacionada:</p>
+              <p className="text-white text-sm font-medium">{relatedQuestion.title}</p>
             </div>
           )}
           
-          <div className="d-flex justify-content-end">
-            <Button 
-              variant="primary" 
-              size="sm" 
+          <div className="flex justify-end">
+            <button 
               onClick={onEdit}
+              className="flex items-center gap-2 bg-[#1079e2] text-white px-4 py-2 rounded-lg hover:bg-[#1079e2]/90 transition-colors"
             >
+              <Edit className="w-4 h-4" />
               Editar
-            </Button>
+            </button>
           </div>
         </div>
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 } 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
+import { ArrowLeft, Upload, Loader } from 'lucide-react';
 import { useTrainingStore, VideoData } from '../../store/training';
 import { useQuestionsStore } from '../../store/questions';
 import { getVideoThumbnail } from '../../utils/videoThumbnail';
@@ -162,125 +162,123 @@ export default function VideoForm() {
 
   if (loadingInitial) {
     return (
-      <Container className="py-5 text-center">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Carregando...</span>
-        </Spinner>
-        <p className="mt-2">Carregando dados do formulário...</p>
-      </Container>
+      <div className="p-8 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1079e2] mx-auto mb-4"></div>
+        <p className="text-[#b5cbe2]">Carregando dados do formulário...</p>
+      </div>
     );
   }
 
   return (
-    <Container className="py-4">
-      <div className="d-flex align-items-center mb-4">
-        <Button 
-          variant="outline-primary" 
-          className="me-3"
+    <div className="p-8">
+      <div className="flex items-center gap-4 mb-8">
+        <button 
           onClick={() => navigate('/admin/videos')}
+          className="bg-[#051524] text-white p-2 rounded-lg hover:bg-[#051524]/80 transition-colors"
         >
-          Voltar
-        </Button>
-        <h1 className="mb-0">{isEditMode ? 'Editar Vídeo' : 'Adicionar Vídeo'}</h1>
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="text-2xl font-bold text-white">{isEditMode ? 'Editar Vídeo' : 'Adicionar Vídeo'}</h1>
       </div>
       
       {error && (
-        <Alert variant="danger" dismissible onClose={() => setError(null)}>
+        <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-lg mb-6">
           {error}
-        </Alert>
+        </div>
       )}
       
       {success && (
-        <Alert variant="success" dismissible onClose={() => setSuccess(null)}>
+        <div className="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-lg mb-6">
           {success}
-        </Alert>
+        </div>
       )}
       
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col md={8}>
-            <Card className="mb-4">
-              <Card.Body>
-                <Form.Group className="mb-3">
-                  <Form.Label>Título</Form.Label>
-                  <Form.Control
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-[#112840] rounded-lg p-6 mb-6">
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[#b5cbe2] mb-2">Título</label>
+                  <input
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
                     required
                     placeholder="Digite o título do vídeo"
+                    className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                   />
-                </Form.Group>
+                </div>
                 
-                <Form.Group className="mb-3">
-                  <Form.Label>Descrição</Form.Label>
-                  <Form.Control
-                    as="textarea"
+                <div>
+                  <label className="block text-[#b5cbe2] mb-2">Descrição</label>
+                  <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
                     required
                     placeholder="Digite uma descrição para o vídeo"
                     rows={4}
+                    className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                   />
-                </Form.Group>
+                </div>
                 
-                <Form.Group className="mb-3">
-                  <Form.Label>URL do Vídeo</Form.Label>
-                  <Form.Control
+                <div>
+                  <label className="block text-[#b5cbe2] mb-2">URL do Vídeo</label>
+                  <input
                     type="url"
                     name="url"
                     value={formData.url}
                     onChange={handleInputChange}
                     required
                     placeholder="https://www.youtube.com/watch?v=..."
+                    className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                   />
-                  <Form.Text className="text-muted">
+                  <p className="text-[#b5cbe2] text-sm mt-1">
                     Suportamos links do YouTube, Vimeo e Loom.
-                  </Form.Text>
-                </Form.Group>
+                  </p>
+                </div>
                 
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Plataforma</Form.Label>
-                      <Form.Select
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#b5cbe2] mb-2">Plataforma</label>
+                    <select
                         name="platform"
                         value={formData.platform}
                         onChange={handleInputChange}
                         required
+                        className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                       >
                         <option value="youtube">YouTube</option>
                         <option value="vimeo">Vimeo</option>
                         <option value="loom">Loom</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
+                      </select>
+                  </div>
                   
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Categoria</Form.Label>
-                      <Form.Select
+                  <div>
+                    <label className="block text-[#b5cbe2] mb-2">Categoria</label>
+                    <select
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
                         required
+                        className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                       >
                         {categories.map(category => (
                           <option key={category} value={category}>{category}</option>
                         ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
+                      </select>
+                  </div>
+                </div>
                 
-                <Form.Group className="mb-3">
-                  <Form.Label>Pergunta Relacionada</Form.Label>
-                  <Form.Select
+                <div>
+                  <label className="block text-[#b5cbe2] mb-2">Pergunta Relacionada</label>
+                  <select
                     name="questionId"
                     value={formData.questionId || ''}
                     onChange={handleInputChange}
+                    className="w-full bg-[#051524] text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1079e2]"
                   >
                     <option value="">Selecione uma pergunta (opcional)</option>
                     {questions.map(question => (
@@ -288,103 +286,99 @@ export default function VideoForm() {
                         {question.title}
                       </option>
                     ))}
-                  </Form.Select>
-                </Form.Group>
-              </Card.Body>
-            </Card>
-          </Col>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
           
-          <Col md={4}>
-            <Card className="mb-4">
-              <Card.Body>
-                <Form.Group className="mb-3">
-                  <Form.Label>Thumbnail</Form.Label>
+          <div>
+            <div className="bg-[#112840] rounded-lg p-6 mb-6">
+              <div>
+                <label className="block text-[#b5cbe2] mb-4">Thumbnail</label>
                   
-                  <div className="mb-3 text-center">
+                <div className="mb-4 text-center">
                     {formData.thumbnail_url ? (
                       <img 
                         src={formData.thumbnail_url} 
                         alt="Thumbnail Preview" 
-                        className="img-fluid rounded mb-2" 
-                        style={{ maxHeight: '200px' }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                          e.currentTarget.src = 'https://via.placeholder.com/640x360?text=Thumbnail+Indisponível';
-                        }}
+                        className="w-full max-h-48 object-cover rounded-lg"
                       />
                     ) : (
                       <div 
-                        className="bg-light d-flex justify-content-center align-items-center rounded"
-                        style={{ height: '200px' }}
+                        className="w-full h-48 bg-[#051524] flex items-center justify-center rounded-lg"
                       >
-                        <span className="text-muted">Sem thumbnail</span>
+                        <span className="text-[#b5cbe2]">Sem thumbnail</span>
                       </div>
                     )}
-                  </div>
+                </div>
                   
-                  <div className="d-grid gap-2">
-                    <Button 
-                      variant="outline-secondary" 
+                <div className="space-y-2">
+                  <button 
+                      type="button"
                       onClick={handleGetThumbnail}
                       disabled={loading || !formData.url}
+                      className="w-full bg-[#051524] text-white px-4 py-2 rounded-lg hover:bg-[#051524]/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {loading ? (
                         <>
-                          <Spinner as="span" size="sm" animation="border" className="me-2" />
+                          <Loader className="w-4 h-4 animate-spin" />
                           Extraindo...
                         </>
                       ) : (
                         'Extrair da URL'
                       )}
-                    </Button>
+                    </button>
                     
-                    <Button 
-                      variant="outline-secondary" 
+                    <button 
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={loading}
+                      className="w-full bg-[#051524] text-white px-4 py-2 rounded-lg hover:bg-[#051524]/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
+                      <Upload className="w-4 h-4" />
                       Fazer upload
-                    </Button>
+                    </button>
                     
                     <input 
                       ref={fileInputRef}
                       type="file" 
-                      className="d-none"
+                      className="hidden"
                       accept="image/*"
                       onChange={handleFileChange}
                     />
-                  </div>
-                </Form.Group>
-              </Card.Body>
-            </Card>
+                </div>
+              </div>
+            </div>
             
-            <div className="d-grid gap-2">
-              <Button 
-                variant="primary" 
+            <div className="space-y-4">
+              <button 
                 type="submit" 
                 disabled={loading}
-                size="lg"
+                className="w-full bg-[#1079e2] text-white px-6 py-3 rounded-lg hover:bg-[#1079e2]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
-                    <Spinner as="span" size="sm" animation="border" className="me-2" />
+                    <Loader className="w-4 h-4 animate-spin" />
                     Salvando...
                   </>
                 ) : (
                   isEditMode ? 'Salvar Alterações' : 'Criar Vídeo'
                 )}
-              </Button>
+              </button>
               
-              <Button 
-                variant="outline-secondary" 
+              <button 
+                type="button"
                 onClick={() => navigate('/admin/videos')}
                 disabled={loading}
+                className="w-full bg-[#051524] text-white px-6 py-3 rounded-lg hover:bg-[#051524]/80 transition-colors disabled:opacity-50"
               >
                 Cancelar
-              </Button>
+              </button>
             </div>
-          </Col>
-        </Row>
-      </Form>
-    </Container>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 } 

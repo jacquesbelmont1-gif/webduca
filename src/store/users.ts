@@ -16,27 +16,64 @@ interface UsersState {
 }
 
 export const useUsersStore = create<UsersState>((set) => ({
-  users: [
-    {
-      id: '1',
-      email: 'jacquesbelmont@gmail.com',
-      name: 'Jacques Yves Silva Belmont',
-      role: 'admin',
-    },
-    {
-      id: '2',
-      email: 'user@example.com',
-      name: 'John Doe',
-      role: 'user',
+  users: [],
+  addUser: async (user) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(user)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add user');
+      }
+      
+      const newUser = await response.json();
+      set((state) => ({ users: [...state.users, newUser] }));
+    } catch (error) {
+      throw error;
     }
-  ],
-  addUser: (user) => set((state) => ({ users: [...state.users, user] })),
-  updateUser: (id, data) => set((state) => ({
-    users: state.users.map(user => 
-      user.id === id ? { ...user, ...data } : user
-    )
-  })),
-  deleteUser: (id) => set((state) => ({
-    users: state.users.filter(user => user.id !== id)
-  })),
+  },
+  updateUser: async (id, data) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update user');
+      }
+      
+      set((state) => ({
+        users: state.users.map(user => 
+          user.id === id ? { ...user, ...data } : user
+        )
+      }));
+    } catch (error) {
+      throw error;
+    }
+  },
+  deleteUser: async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      
+      set((state) => ({
+        users: state.users.filter(user => user.id !== id)
+      }));
+    } catch (error) {
+      throw error;
+    }
+  },
 }));
