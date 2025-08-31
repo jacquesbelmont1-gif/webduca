@@ -4,7 +4,7 @@ import { useUsersStore, User } from '../../store/users';
 import { Link } from 'react-router-dom';
 
 export function AdminUsers() {
-  const { users, updateUser, deleteUser, addUser } = useUsersStore();
+  const { users, updateUser, deleteUser, addUser, fetchUsers } = useUsersStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -17,6 +17,11 @@ export function AdminUsers() {
     password: '',
     confirmPassword: ''
   });
+
+  // Carregar usuários ao montar o componente
+  React.useEffect(() => {
+    fetchUsers().catch(console.error);
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

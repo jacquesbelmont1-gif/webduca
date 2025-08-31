@@ -148,6 +148,62 @@ const initDatabase = async () => {
           platform: 'loom',
           thumbnail_url: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800',
           category: 'Liderança'
+        },
+        {
+          title: 'Estratégias de Prospecção Digital',
+          description: 'Domine as melhores práticas para prospecção em redes sociais e canais digitais.',
+          url: 'https://www.youtube.com/watch?v=example1',
+          platform: 'youtube',
+          thumbnail_url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800',
+          category: 'Vendas'
+        },
+        {
+          title: 'Comunicação Assertiva em Vendas',
+          description: 'Aprenda a se comunicar de forma clara e persuasiva com seus clientes.',
+          url: 'https://vimeo.com/example2',
+          platform: 'vimeo',
+          thumbnail_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800',
+          category: 'Técnicas Avançadas'
+        },
+        {
+          title: 'Gestão de Objeções',
+          description: 'Como lidar com objeções de clientes e transformá-las em oportunidades.',
+          url: 'https://www.loom.com/share/example3',
+          platform: 'loom',
+          thumbnail_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800',
+          category: 'Vendas'
+        },
+        {
+          title: 'Construindo Relacionamentos Duradouros',
+          description: 'Estratégias para criar vínculos sólidos com clientes e parceiros.',
+          url: 'https://www.youtube.com/watch?v=example4',
+          platform: 'youtube',
+          thumbnail_url: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800',
+          category: 'Liderança'
+        },
+        {
+          title: 'Análise de Performance de Vendas',
+          description: 'Como analisar métricas e KPIs para otimizar seus resultados.',
+          url: 'https://vimeo.com/example5',
+          platform: 'vimeo',
+          thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800',
+          category: 'Técnicas Avançadas'
+        },
+        {
+          title: 'Motivação e Engajamento de Equipes',
+          description: 'Técnicas para manter sua equipe motivada e engajada.',
+          url: 'https://www.loom.com/share/example6',
+          platform: 'loom',
+          thumbnail_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800',
+          category: 'Liderança'
+        },
+        {
+          title: 'Fundamentos do CRM',
+          description: 'Como utilizar sistemas CRM para maximizar suas vendas.',
+          url: 'https://www.youtube.com/watch?v=example7',
+          platform: 'youtube',
+          thumbnail_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
+          category: 'Fundamentos'
         }
       ];
 
@@ -156,6 +212,133 @@ const initDatabase = async () => {
           INSERT INTO videos (title, description, url, platform, thumbnail_url, category)
           VALUES ($1, $2, $3, $4, $5, $6)
         `, [video.title, video.description, video.url, video.platform, video.thumbnail_url, video.category]);
+      }
+    }
+
+    // Insert sample users if not exists
+    const usersCount = await pool.query('SELECT COUNT(*) FROM users');
+    if (parseInt(usersCount.rows[0].count) <= 1) { // Only admin exists
+      const sampleUsers = [
+        {
+          name: 'Carlos Silva',
+          email: 'carlos.silva@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 85.50,
+          team: 'blue'
+        },
+        {
+          name: 'Ana Santos',
+          email: 'ana.santos@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 92.30,
+          team: 'red'
+        },
+        {
+          name: 'Pedro Oliveira',
+          email: 'pedro.oliveira@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 78.90,
+          team: 'green'
+        },
+        {
+          name: 'Maria Costa',
+          email: 'maria.costa@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 105.75,
+          team: 'yellow'
+        },
+        {
+          name: 'João Ferreira',
+          email: 'joao.ferreira@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 67.20,
+          team: 'blue'
+        },
+        {
+          name: 'Lucia Rodrigues',
+          email: 'lucia.rodrigues@wsp.com',
+          password: await bcrypt.hash('123456', 10),
+          role: 'user',
+          fraternity_coins: 89.40,
+          team: 'red'
+        }
+      ];
+
+      for (const user of sampleUsers) {
+        await pool.query(`
+          INSERT INTO users (name, email, password, role, fraternity_coins, team)
+          VALUES ($1, $2, $3, $4, $5, $6)
+        `, [user.name, user.email, user.password, user.role, user.fraternity_coins, user.team]);
+      }
+    }
+
+    // Insert sample questions if not exists
+    const questionsExist = await pool.query('SELECT id FROM questions LIMIT 1');
+    if (questionsExist.rows.length === 0) {
+      // Get user IDs for sample questions
+      const users = await pool.query('SELECT id, name, team FROM users WHERE role = $1', ['user']);
+      
+      if (users.rows.length > 0) {
+        const sampleQuestions = [
+          {
+            user_id: users.rows[0].id,
+            title: 'Como melhorar a taxa de conversão?',
+            description: 'Estou com dificuldades para converter leads em vendas. Quais são as melhores práticas?',
+            category: 'Vendas'
+          },
+          {
+            user_id: users.rows[1]?.id || users.rows[0].id,
+            title: 'Estratégias para motivar a equipe',
+            description: 'Como posso manter minha equipe motivada durante períodos de baixa performance?',
+            category: 'Liderança'
+          },
+          {
+            user_id: users.rows[2]?.id || users.rows[0].id,
+            title: 'Uso eficiente do CRM',
+            description: 'Quais são as funcionalidades mais importantes do CRM que devo focar?',
+            category: 'Fundamentos'
+          },
+          {
+            user_id: users.rows[3]?.id || users.rows[0].id,
+            title: 'Técnicas de follow-up',
+            description: 'Qual é a frequência ideal para fazer follow-up com prospects?',
+            category: 'Técnicas Avançadas'
+          },
+          {
+            user_id: users.rows[4]?.id || users.rows[0].id,
+            title: 'Prospecção no LinkedIn',
+            description: 'Como criar uma estratégia eficaz de prospecção no LinkedIn?',
+            category: 'Vendas'
+          }
+        ];
+
+        for (const question of sampleQuestions) {
+          const result = await pool.query(`
+            INSERT INTO questions (user_id, title, description, category)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+          `, [question.user_id, question.title, question.description, question.category]);
+          
+          // Add some sample votes
+          const questionId = result.rows[0].id;
+          const votersCount = Math.floor(Math.random() * 4) + 1; // 1-4 votes
+          
+          for (let i = 0; i < votersCount && i < users.rows.length; i++) {
+            try {
+              await pool.query(`
+                INSERT INTO question_votes (question_id, user_id)
+                VALUES ($1, $2)
+              `, [questionId, users.rows[i].id]);
+            } catch (err) {
+              // Ignore duplicate vote errors
+            }
+          }
+        }
       }
     }
 

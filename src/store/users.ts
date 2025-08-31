@@ -17,6 +17,24 @@ interface UsersState {
 
 export const useUsersStore = create<UsersState>((set) => ({
   users: [],
+  
+  fetchUsers: async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/users', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      
+      const users = await response.json();
+      set({ users });
+    } catch (error) {
+      throw error;
+    }
+  },
+  
   addUser: async (user) => {
     try {
       const response = await fetch('http://localhost:3001/api/users', {

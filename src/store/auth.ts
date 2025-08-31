@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       
       const userData = await response.json();
-      set({ user: response.data, loading: false });
+      set({ user: userData, loading: false });
     } catch (err) {
       set({ user: null, loading: false });
     }
@@ -62,7 +62,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       
       const userData = await response.json();
-      set({ user: response.data, loading: false });
+      set({ user: userData, loading: false });
     } catch (err) {
       set({ user: null, loading: false });
     }
