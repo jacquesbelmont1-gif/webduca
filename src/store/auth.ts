@@ -34,13 +34,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
       
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Credenciais inválidas');
       }
       
       const userData = await response.json();
       set({ user: userData, loading: false });
     } catch (err) {
       set({ user: null, loading: false });
+      throw err;
     }
   },
   signOut: async () => {

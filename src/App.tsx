@@ -4,6 +4,7 @@ import { useAuthStore } from './store/auth';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 import { Home } from './pages/Home';
 import { Team } from './pages/Team';
 import { Training } from './pages/Training';
@@ -12,10 +13,10 @@ import { Profile } from './pages/Profile';
 import { Questions } from './pages/Questions';
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { AdminUsers } from './pages/admin/Users';
+import { AdminInvites } from './pages/admin/Invites';
 import Videos from './pages/admin/Videos';
 import VideoForm from './pages/admin/VideoForm';
 import { AdminSupport } from './pages/admin/Support';
-import { AdminClasses } from './pages/admin/Classes';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { user, loading } = useAuthStore();
@@ -23,7 +24,10 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
   if (loading) {
     return (
       <div className="min-h-screen bg-[#051524] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1079e2]"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1079e2] mx-auto mb-4"></div>
+          <p className="text-[#b5cbe2]">Carregando...</p>
+        </div>
       </div>
     );
   }
@@ -50,6 +54,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         
         {/* Admin Routes */}
         <Route
@@ -62,11 +67,11 @@ function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="invites" element={<AdminInvites />} />
           <Route path="videos" element={<Videos />} />
           <Route path="videos/new" element={<VideoForm />} />
           <Route path="videos/edit/:id" element={<VideoForm />} />
           <Route path="support" element={<AdminSupport />} />
-          <Route path="classes" element={<AdminClasses />} />
         </Route>
 
         {/* User Routes */}
